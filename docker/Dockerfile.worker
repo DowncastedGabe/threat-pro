@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements/base.txt /app/requirements/base.txt
+RUN pip install --no-cache-dir -r /app/requirements/base.txt
+
+COPY . /app
+
+CMD ["python", "-m", "app.infrastructure.workers.scheduler_adapter"]

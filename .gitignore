@@ -1,0 +1,51 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Runtime data and logs
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+dist/
+build/
+
+# Large local installers and binaries
+*.exe
+*.msi
+*.iso
+*.zip
+*.7z
+*.rar
+
+# Nested/third-party repositories
+exploitdb-mcp-server/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
