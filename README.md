@@ -1,66 +1,56 @@
 🛡️ ThreatIntel Pro
-ThreatIntel Pro é uma plataforma avançada de inteligência de ameaças projetada para centralizar a ingestão, análise e visualização de indicadores de comprometimento (IOCs). O projeto foca em automatizar a triagem de artefatos suspeitos, permitindo que analistas de SOC e pesquisadores de segurança processem dados de múltiplas fontes em um único dashboard.
+A Comprehensive SOC & OSINT Automation Platform
 
-🚀 Funcionalidades Principais
-Leitor Multimodal de Ingestão: * URLs: Captura automática de conteúdo, análise de reputação e detecção de phishing.
+ThreatIntel Pro is a high-performance, modular security operations dashboard designed for automated reconnaissance, vulnerability assessment, and threat analysis. Built with a focus on anonymity and scalability, it integrates global threat intelligence feeds with local sandbox capabilities.
 
-Arquivos Locais: Suporte para upload e parsing de arquivos (PDF, LOG, TXT, JSON) para extração de padrões maliciosos.
+🚀 Key Features
+🌐 Intelligence & OSINT
+IP Intelligence: Deep scanning using Nmap and reputation checks via AbuseIPDB and Shodan Academic API.
 
-Extração de IOCs: Identificação automática de endereços IP, hashes (MD5, SHA256), domínios e e-mails suspeitos.
+Site & Domain Analysis: Complete DNS mapping (A, MX, NS, TXT/SPF), TLS certificate validation, and infrastructure health monitoring.
 
-Integração com APIs de Segurança: (Ex: VirusTotal, URLScan, AbuseIPDB).
+Tor-Proxied OSINT: Anonymous directory brute-forcing and sensitive file discovery (e.g., .env, .git) routed through the Tor network to prevent IP blacklisting.
 
-Análise Estática: Extração de metadados de arquivos sem execução (segurança em primeiro lugar).
+🔬 Sandbox & Malware Analysis
+File Malware Scanner: Static analysis using python-magic for MIME-type validation and global reputation lookups via VirusTotal (MD5/SHA-256 hashes).
 
-Dashboard Interativo: Visualização em tempo real do nível de criticidade dos dados analisados.
+URL Reputation & Traffic: Real-time URL analysis using Google Safe Browsing and redirect chain tracking via Tor.
 
-🛠️ Tech Stack
-Backend: Python (FastAPI / SQLModel)
+🤖 Automation & Monitoring
+Scheduled Scans: Automated background tasks powered by APScheduler for continuous target monitoring.
 
-Banco de Dados: PostgreSQL (Migrado para escalabilidade)
+Drift Analysis: Intelligent comparison between scans to detect infrastructure changes, such as newly opened ports or modified services.
 
-Análise de Dados: BeautifulSoup4, PyMuPDF, Pandas
+Geospatial Visualization: Interactive world map plotting of threat origins and target locations.
 
-Segurança: Integração com Shodan e rede Tor para anonimização de consultas.
+🛠️ Tech StackLayerTechnologiesBackendPython 3.10+, FastAPI, SQLModel (ORM)FrontendReact, Material UI (MUI), RechartsDatabasePostgreSQL (JSONB for complex scan data storage)InfrastructureDocker & Docker Compose, Tor ProxySecurity APIsShodan, VirusTotal, AbuseIPDB, Google Safe Browsing
 
-Frontend: [Insira sua tecnologia, ex: React/Streamlit]
+🏗️ Architecture
+The project follows a Service-Oriented Architecture (SOA):
 
-📁 Estrutura do Projeto
-Bash
-├── src/
-│   ├── ingestion/       # Módulo de leitura de arquivos e URLs
-│   ├── analysis/        # Motores de busca e integração com APIs
-│   ├── database/        # Modelagem e migrações (PostgreSQL)
-│   └── api/             # Endpoints da aplicação
-├── tests/               # Testes unitários e de integração
-├── requirements.txt     # Dependências do projeto
-└── main.py              # Ponto de entrada
+FastAPI Routers: Modularized endpoints for Analysis, History, and Monitoring.
 
+PostgreSQL JSONB: Optimized storage for nested scan results, allowing complex queries directly on vulnerability data.
 
-⚙️ Como Instalar e Rodar
-Clone o repositório:
+Async Workers: Non-blocking Nmap and API executions using Python's asyncio.
+
+📦 Installation & Setup
+Clone the repository:
 
 Bash
-git clone https://github.com/seu-usuario/threat-intel-pro.git
-Configure o ambiente virtual:
-
-Bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# ou
-.\venv\Scripts\activate  # Windows
-Instale as dependências:
-
-Bash
-pip install -r requirements.txt
-Configure as chaves de API:
-Crie um arquivo .env na raiz e adicione suas chaves:
+git clone https://github.com/GabeRoot/threatintel-pro.git
+cd threatintel-pro
+Configure Environment Variables:
+Create a .env file in the root directory:
 
 Snippet de código
-VT_API_KEY=seu_token_aqui
-SHODAN_API_KEY=seu_token_aqui
-⚠️ Disclaimer (Aviso Legal)
-Este projeto foi desenvolvido para fins estritamente educacionais e de pesquisa em segurança cibernética. O autor não se responsabiliza pelo uso indevido da ferramenta. Sempre analise arquivos suspeitos em ambientes controlados (Sandboxes).
+   SHODAN_API_KEY=your_key
+   ABUSEIPDB_API_KEY=your_key
+   VIRUSTOTAL_API_KEY=your_key
+   DATABASE_URL=postgresql://user:pass@db:5432/threat_db
+Run with Docker Compose:
 
-👨‍💻 Autor
-Desenvolvido por Gabriel – Estudante de Segurança da Informação.
+Bash
+   docker-compose up --build
+🛡️ Educational Purpose
+This project was developed by Gabriel, an Information Security student, for academic and professional portfolio purposes. It demonstrates the integration of modern backend architectures with cybersecurity best practices.
