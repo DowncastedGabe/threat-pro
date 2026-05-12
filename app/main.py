@@ -31,7 +31,7 @@ from app.api.routes.v1.router import api_v1_router
 from app.core.config.settings import settings
 from app.core.exceptions.handlers import register_exception_handlers
 from app.core.logging.config import configure_logging
-from app.routers import analise, historico, monitoramento
+from app.routers import analise, historico, monitoramento, sandbox
 from app.infrastructure.database.base import Base
 from app.infrastructure.database.models import UserModel
 from core.engine import engine
@@ -55,6 +55,39 @@ def _aplicar_migracoes_leves() -> None:
         conn.execute(text("UPDATE analisesite SET timestamp = timestamp_auditoria WHERE timestamp IS NULL"))
         conn.execute(text("UPDATE analisesite SET registros_dns = dns_records WHERE registros_dns IS NULL AND dns_records IS NOT NULL"))
         conn.execute(text("UPDATE analisesite SET infra_health = infra_status WHERE infra_health IS NULL AND infra_status IS NOT NULL"))
+        # Sandbox: novas tabelas (criadas via SQLModel.metadata.create_all, mas migração defensiva)
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS analisearquivo (
+                id SERIAL PRIMARY KEY,
+                nome_original VARCHAR NOT NULL,
+                tamanho_bytes INTEGER DEFAULT 0,
+                mime_type VARCHAR,
+                extensao_declarada VARCHAR,
+                md5 VARCHAR NOT NULL,
+                sha1 VARCHAR NOT NULL,
+                sha256 VARCHAR NOT NULL,
+                vt_relatorio JSONB,
+                vt_total_engines INTEGER DEFAULT 0,
+                vt_total_detected INTEGER DEFAULT 0,
+                vt_status VARCHAR DEFAULT 'limpo',
+                timestamp TIMESTAMP DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS analiseurl (
+                id SERIAL PRIMARY KEY,
+                url_original VARCHAR NOT NULL,
+                reputacao_status VARCHAR DEFAULT 'desconhecida',
+                reputacao_fonte VARCHAR,
+                reputacao_relatorio JSONB,
+                redirect_hops JSONB,
+                url_final VARCHAR,
+                content_type_final VARCHAR,
+                via_tor BOOLEAN DEFAULT FALSE,
+                tor_erro VARCHAR,
+                timestamp TIMESTAMP DEFAULT NOW()
+            )
+        """))
 
 
 # ── Ciclo de vida da aplicação ────────────────────────────────────────────────
@@ -119,6 +152,7 @@ app.add_middleware(
 app.include_router(analise.router)
 app.include_router(historico.router)
 app.include_router(monitoramento.router)
+app.include_router(sandbox.router)
 app.include_router(api_v1_router)
 
 

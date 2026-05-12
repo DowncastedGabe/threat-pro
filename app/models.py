@@ -6,7 +6,7 @@ from sqlmodel import SQLModel, Field, Column
 from sqlalchemy.dialects.postgresql import JSONB
 
 
-# ── Tabelas ───────────────────────────────────────────────────────────────────
+
 
 class AnaliseIP(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -18,7 +18,6 @@ class AnaliseIP(SQLModel, table=True):
     provedor: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
-    # Campo JSONB nativo do Postgres para consultas otimizadas
     vulnerabilidades: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
     timestamp_auditoria: datetime = Field(default_factory=datetime.utcnow)
 
@@ -34,7 +33,6 @@ class AnaliseSite(SQLModel, table=True):
     certificados_tls: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
     registros_dns: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
     infra_health: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
-    # Compatibilidade com registros e telas anteriores.
     dns_records: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
     infra_status: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
     headers_seguranca: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
@@ -43,7 +41,6 @@ class AnaliseSite(SQLModel, table=True):
 
 
 class ScanPorta(SQLModel, table=True):
-    """Snapshot de portas de um scan específico — base para calcular diffs."""
 
     id: Optional[int] = Field(default=None, primary_key=True)
     analise_ip_id: int = Field(foreign_key="analiseip.id", index=True)
@@ -56,7 +53,6 @@ class ScanPorta(SQLModel, table=True):
 
 
 class DriftAnalise(SQLModel, table=True):
-    """Registro das diferenças detectadas entre dois scans consecutivos de um IP."""
 
     id: Optional[int] = Field(default=None, primary_key=True)
     ip: str = Field(index=True)
@@ -70,7 +66,6 @@ class DriftAnalise(SQLModel, table=True):
 
 
 class MonitoramentoAgendado(SQLModel, table=True):
-    """IP/site cadastrado para escaneamento periódico automático."""
 
     id: Optional[int] = Field(default=None, primary_key=True)
     ip: str = Field(index=True)
@@ -80,21 +75,49 @@ class MonitoramentoAgendado(SQLModel, table=True):
     criado_em: datetime = Field(default_factory=datetime.utcnow)
 
 
-# ── Schemas Pydantic ──────────────────────────────────────────────────────────
+class AnaliseArquivo(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nome_original: str
+    tamanho_bytes: int = 0
+    mime_type: Optional[str] = None
+    extensao_declarada: Optional[str] = None
+    md5: str = Field(index=True)
+    sha1: str
+    sha256: str = Field(index=True)
+    vt_relatorio: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
+    vt_total_engines: int = 0
+    vt_total_detected: int = 0
+    vt_status: str = "limpo"
+    timestamp: datetime = Field(default_factory=datetime.utcnow, index=True)
+
+
+class AnaliseURL(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    url_original: str = Field(index=True)
+    reputacao_status: str = "desconhecida"
+    reputacao_fonte: Optional[str] = None
+    reputacao_relatorio: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
+    redirect_hops: Optional[Any] = Field(default=None, sa_column=Column(JSONB))
+    url_final: Optional[str] = None
+    content_type_final: Optional[str] = None
+    via_tor: bool = False
+    tor_erro: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow, index=True)
+
+
+
 
 class AnaliseRequest(BaseModel):
     ip: IPvAnyAddress
 
 
 class CveInfo(BaseModel):
-    """Vulnerabilidade individual do Shodan."""
     cve_id: str
     cvss: Optional[float] = None
     summary: Optional[str] = None
 
 
 class ShodanInfo(BaseModel):
-    """Dados enriquecidos do Shodan para um IP."""
     portas: list[int] = []
     cves: list[CveInfo] = []
     banners: list[dict[str, Any]] = []
@@ -235,3 +258,44 @@ class OsintDorkResponse(BaseModel):
     via_tor: bool
     resultados: list[DorkResult]
     erro: Optional[str] = None
+
+
+class ArquivoScanResponse(BaseModel):
+    id: int
+    nome_original: str
+    tamanho_bytes: int
+    mime_type: Optional[str] = None
+    extensao_declarada: Optional[str] = None
+    md5: str
+    sha1: str
+    sha256: str
+    vt_total_engines: int
+    vt_total_detected: int
+    vt_status: str
+    vt_relatorio: Optional[Any] = None
+    timestamp: datetime
+
+
+class URLScanRequest(BaseModel):
+    url: str
+
+
+class RedirectHop(BaseModel):
+    ordem: int
+    url: str
+    status_code: Optional[int] = None
+    location: Optional[str] = None
+
+
+class URLScanResponse(BaseModel):
+    id: int
+    url_original: str
+    reputacao_status: str
+    reputacao_fonte: Optional[str] = None
+    reputacao_relatorio: Optional[Any] = None
+    redirect_hops: Optional[list[RedirectHop]] = None
+    url_final: Optional[str] = None
+    content_type_final: Optional[str] = None
+    via_tor: bool
+    tor_erro: Optional[str] = None
+    timestamp: datetime

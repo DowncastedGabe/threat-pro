@@ -8,6 +8,7 @@ import IpAnalysis from '../pages/IpAnalysis';
 import Monitoring from '../pages/Monitoring';
 import OsintDorker from '../pages/OsintDorker';
 import RouterProtection from '../pages/RouterProtection';
+import SandBox from '../pages/SandBox';
 import SiteAnalysis from '../pages/SiteAnalysis';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
@@ -26,6 +27,7 @@ export default function AppRoutes() {
       <Route path="/osint" element={<ProtectedRoute><OsintDorker /></ProtectedRoute>} />
       <Route path="/roteador" element={<ProtectedRoute><RouterProtection /></ProtectedRoute>} />
       <Route path="/discos" element={<ProtectedRoute><DiskMapping /></ProtectedRoute>} />
+      <Route path="/sandbox" element={<ProtectedRoute><SandBox /></ProtectedRoute>} />
     </Routes>
   );
 }

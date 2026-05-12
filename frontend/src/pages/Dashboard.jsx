@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import {
   Container, Stack, Typography, Box, Snackbar, Alert, Skeleton, Grid,
 } from '@mui/material';
+import BugReportIcon from '@mui/icons-material/BugReport';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import api from '../api';
 import StatsGrid, { StatsGridSkeleton } from '../components/StatsGrid';
 import RiskChart, { RiskChartSkeleton }   from '../components/RiskChart';
 import HistoryTable, { HistoryTableSkeleton } from '../components/HistoryTable';
 import SiteHistoryTable, { SiteHistoryTableSkeleton } from '../components/SiteHistoryTable';
+import SandBox from './SandBox';
 import LanguageIcon from '@mui/icons-material/Language';
 import RouterIcon from '@mui/icons-material/Router';
 import { Tab, Tabs as MuiTabs } from '@mui/material';
@@ -105,6 +107,12 @@ export default function Dashboard() {
         <MuiTabs value={tabIndex} onChange={(_, v) => setTabIndex(v)} sx={{ '& .MuiTab-root': { minHeight: 48 } }}>
           <Tab icon={<RouterIcon sx={{ mr: 1, fontSize: 20 }} />} iconPosition="start" label="Histórico de IPs" />
           <Tab icon={<LanguageIcon sx={{ mr: 1, fontSize: 20 }} />} iconPosition="start" label="Histórico de Sites" />
+          <Tab
+            icon={<BugReportIcon sx={{ mr: 1, fontSize: 20, color: tabIndex === 2 ? '#ff1744' : undefined }} />}
+            iconPosition="start"
+            label="SandBox"
+            sx={{ '&.Mui-selected': { color: '#ff1744' } }}
+          />
         </MuiTabs>
       </Box>
 
@@ -139,6 +147,8 @@ export default function Dashboard() {
           </Stack>
         )
       )}
+
+      {tabIndex === 2 && <SandBox />}
 
       <Snackbar open={Boolean(error)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert severity="error" variant="filled" sx={{ fontWeight: 600, borderRadius: 2 }}>
